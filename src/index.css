@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #080808;
+    color: #ECECEC;
+    font-family: 'Space Grotesk', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: #C6FF00; color: #080808; }
+}
+
+@layer components {
+  .inp {
+    @apply w-full bg-card border border-border text-snow text-sm px-4 py-3
+           placeholder:text-snow/25 focus:outline-none focus:border-lime/50
+           transition-colors duration-150;
+  }
+
+  .inp-select {
+    @apply inp appearance-none cursor-pointer;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .tab-btn {
+    @apply flex-1 py-4 text-xs font-bold tracking-widest uppercase transition-all duration-150
+           border-b-2 border-transparent text-snow/40 hover:text-snow/70;
+  }
+  .tab-btn.active {
+    @apply border-lime text-lime;
+  }
+}
