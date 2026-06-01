@@ -69,6 +69,12 @@ function DemandCard({ demand: d, isProvider, userId, onUpdate }) {
     onUpdate()
   }
 
+  const deleteDemand = async () => {
+    if (!window.confirm('Deletar esta demanda permanentemente?')) return
+    await supabase.from('demands').delete().eq('id', d.id)
+    onUpdate()
+  }
+
   const handleConfirm = async () => {
     await update({ status: 'confirmado', scheduled_date: confDate || null,
                    scheduled_time: confTime || null, assigned_to: userId })
@@ -92,10 +98,19 @@ function DemandCard({ demand: d, isProvider, userId, onUpdate }) {
             {TYPE[d.type]?.label}
           </span>
         </div>
-        <span className={`shrink-0 text-[10px] font-bold tracking-widest uppercase
-                          px-2 py-0.5 border ${s.badge}`}>
-          {s.label}
-        </span>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className={`text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 border ${s.badge}`}>
+            {s.label}
+          </span>
+          {isProvider && (
+            <button onClick={deleteDemand} title="Deletar demanda"
+              className="text-snow/20 hover:text-red-400 transition-colors duration-150 p-0.5">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* meta */}
