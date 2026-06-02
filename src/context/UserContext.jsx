@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from 'react'
 
 export const USERS = [
-  { id: 'charles',   name: 'Charles',     role: 'client'   },
+  { id: 'charles',   name: 'Dr. Charles', role: 'client'   },
   { id: 'drgiovane', name: 'Dr. Giovane', role: 'client'   },
   { id: 'pablo',     name: 'Pablo',       role: 'provider' },
   { id: 'diogo',     name: 'Diogo',       role: 'provider' },
