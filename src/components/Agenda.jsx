@@ -369,39 +369,34 @@ export default function Agenda() {
             const hasEvents    = agendamentos.length > 0 || entregas.length > 0
             const isToday      = ds === today
             const isSel        = selectedDay === day
+            // Cor de fundo do dia
+            const bgColor = isSel
+              ? 'bg-lime/20 border border-lime text-lime'
+              : entregas.length > 0 && agendamentos.length === 0
+                ? 'bg-lime text-ink font-extrabold'
+                : agendamentos.length > 0
+                  ? 'bg-amber-400 text-ink font-extrabold'
+                  : isToday
+                    ? 'border border-snow/30 text-snow'
+                    : 'text-snow/40 hover:bg-snow/5'
+
             return (
               <button key={i} onClick={() => setSelectedDay(isSel ? null : day)}
-                className={`relative flex flex-col items-center py-1.5 min-h-[3rem] transition-all duration-100
-                  ${isSel    ? 'bg-lime/10 border border-lime/40 text-lime'
-                  : isToday  ? 'border border-snow/20 text-snow'
-                  : hasEvents ? 'hover:bg-snow/5 text-snow'
-                  :            'hover:bg-snow/5 text-snow/40'}`}>
-                <span className={`text-xs font-bold leading-none ${hasEvents ? 'text-snow' : ''}`}>{day}</span>
-
-                <div className="flex flex-col gap-0.5 mt-1 items-center">
-                  {/* Agendamentos — amarelo */}
-                  {agendamentos.length > 0 && (
-                    <div className="flex gap-0.5 items-center">
-                      {agendamentos.slice(0, 2).map((_, j) => (
-                        <span key={j} className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                      ))}
-                      {agendamentos.length > 2 && (
-                        <span className="text-[8px] text-amber-400 leading-none font-bold">+{agendamentos.length - 2}</span>
-                      )}
-                    </div>
-                  )}
-                  {/* Entregas — verde */}
-                  {entregas.length > 0 && (
-                    <div className="flex gap-0.5 items-center">
-                      {entregas.slice(0, 2).map((_, j) => (
-                        <span key={j} className="w-1.5 h-1.5 rounded-full bg-lime" />
-                      ))}
-                      {entregas.length > 2 && (
-                        <span className="text-[8px] text-lime leading-none font-bold">+{entregas.length - 2}</span>
-                      )}
-                    </div>
-                  )}
-                </div>
+                className={`relative flex flex-col items-center justify-center min-h-[3rem] transition-all duration-150 ${bgColor}`}>
+                <span className="text-xs font-bold leading-none">{day}</span>
+                {/* Ambos agendamento e entrega no mesmo dia */}
+                {agendamentos.length > 0 && entregas.length > 0 && (
+                  <div className="flex gap-0.5 mt-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-ink/40" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-lime" />
+                  </div>
+                )}
+                {(agendamentos.length > 1 && entregas.length === 0) && (
+                  <span className="text-[8px] font-extrabold mt-0.5 text-ink/60">×{agendamentos.length}</span>
+                )}
+                {(entregas.length > 1 && agendamentos.length === 0) && (
+                  <span className="text-[8px] font-extrabold mt-0.5 text-ink/60">×{entregas.length}</span>
+                )}
               </button>
             )
           })}
