@@ -248,7 +248,7 @@ export default function Agenda() {
   const filtered = demands.filter(d => {
     if (filterStatus !== 'all' && d.status !== filterStatus) return false
     if (filterType   !== 'all' && d.type   !== filterType)   return false
-    if (selectedDateStr) return d.scheduled_date === selectedDateStr
+    if (selectedDateStr) return getDate(d) === selectedDateStr
     return true
   })
 
