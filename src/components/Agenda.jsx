@@ -57,15 +57,10 @@ function userName(id) {
 
 // ── DemandCard ────────────────────────────────────────────────────────────────
 function DemandCard({ demand: d, isProvider, userId, onUpdate }) {
-  const [showConfirm, setShowConfirm] = useState(false)
-  const [confDate,    setConfDate]    = useState('')
-  const [confTime,    setConfTime]    = useState('')
-  const [showCancel,  setShowCancel]  = useState(false)
+  const [showCancel, setShowCancel] = useState(false)
 
   const update = async (patch) => {
-    await supabase.from('demands')
-      .update({ ...patch, updated_at: new Date().toISOString() })
-      .eq('id', d.id)
+    await supabase.from('demands').update(patch).eq('id', d.id)
     onUpdate()
   }
 
@@ -73,12 +68,6 @@ function DemandCard({ demand: d, isProvider, userId, onUpdate }) {
     if (!window.confirm('Deletar esta demanda permanentemente?')) return
     await supabase.from('demands').delete().eq('id', d.id)
     onUpdate()
-  }
-
-  const handleConfirm = async () => {
-    await update({ status: 'confirmado', scheduled_date: confDate || null,
-                   scheduled_time: confTime || null, assigned_to: userId })
-    setShowConfirm(false); setConfDate(''); setConfTime('')
   }
 
   const s = STATUS[d.status] ?? STATUS.pendente
@@ -149,12 +138,11 @@ function DemandCard({ demand: d, isProvider, userId, onUpdate }) {
       {isProvider && (
         <div className="border-t border-border pt-3 mt-1 flex flex-col gap-2">
 
-          {/* Confirm form */}
-          {d.status === 'pendente' && !showConfirm && !showCancel && (
+          {d.status === 'pendente' && !showCancel && (
             <div className="flex gap-2">
-              <button onClick={() => setShowConfirm(true)}
-                className="flex-1 py-2 text-[10px] font-bold tracking-widest uppercase
-                           transition-all" style={{ backgroundColor:'#C6FF00', color:'#080808' }}>
+              <button onClick={() => update({ status: 'confirmado', assigned_to: userId })}
+                className="flex-1 py-2 text-[10px] font-bold tracking-widest uppercase transition-all"
+                style={{ backgroundColor:'#C6FF00', color:'#080808' }}>
                 Confirmar
               </button>
               <button onClick={() => setShowCancel(true)}
@@ -162,33 +150,6 @@ function DemandCard({ demand: d, isProvider, userId, onUpdate }) {
                            uppercase text-snow/40 hover:text-snow/70 hover:border-snow/30 transition-all">
                 Cancelar
               </button>
-            </div>
-          )}
-
-          {d.status === 'pendente' && showConfirm && (
-            <div className="flex flex-col gap-2">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] font-bold tracking-widest uppercase text-snow/40">Data</label>
-                  <input type="date" value={confDate} onChange={e => setConfDate(e.target.value)} className="inp text-xs py-2" />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[9px] font-bold tracking-widest uppercase text-snow/40">Horário</label>
-                  <input type="time" value={confTime} onChange={e => setConfTime(e.target.value)} className="inp text-xs py-2" />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={handleConfirm}
-                  className="flex-1 py-2 text-[10px] font-bold tracking-widest uppercase transition-all"
-                  style={{ backgroundColor:'#C6FF00', color:'#080808' }}>
-                  Salvar
-                </button>
-                <button onClick={() => { setShowConfirm(false); setConfDate(''); setConfTime('') }}
-                  className="px-4 py-2 border border-border text-[10px] text-snow/40 hover:text-snow/70
-                             font-bold tracking-widest uppercase transition-all">
-                  Voltar
-                </button>
-              </div>
             </div>
           )}
 
