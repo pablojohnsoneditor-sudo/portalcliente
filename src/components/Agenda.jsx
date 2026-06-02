@@ -265,18 +265,20 @@ export default function Agenda() {
   const prevMonth = () => setCurrentMonth(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))
   const nextMonth = () => setCurrentMonth(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))
 
+  const getDate = (d) => d.scheduled_date || d.details?.data || null
+
   const demandsOnDay = (day) =>
-    day ? demands.filter(d => d.scheduled_date === dateStr(year, month, day)) : []
+    day ? demands.filter(d => getDate(d) === dateStr(year, month, day)) : []
 
   const agendamentosOnDay = (day) =>
     day ? demands.filter(d =>
-      d.scheduled_date === dateStr(year, month, day) &&
+      getDate(d) === dateStr(year, month, day) &&
       ['confirmado', 'pendente'].includes(d.status)
     ) : []
 
   const entregasOnDay = (day) =>
     day ? demands.filter(d =>
-      d.scheduled_date === dateStr(year, month, day) &&
+      getDate(d) === dateStr(year, month, day) &&
       d.status === 'entregue'
     ) : []
 
