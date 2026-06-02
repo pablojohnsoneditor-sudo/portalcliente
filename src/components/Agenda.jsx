@@ -268,6 +268,18 @@ export default function Agenda() {
   const demandsOnDay = (day) =>
     day ? demands.filter(d => d.scheduled_date === dateStr(year, month, day)) : []
 
+  const agendamentosOnDay = (day) =>
+    day ? demands.filter(d =>
+      d.scheduled_date === dateStr(year, month, day) &&
+      ['confirmado', 'pendente'].includes(d.status)
+    ) : []
+
+  const entregasOnDay = (day) =>
+    day ? demands.filter(d =>
+      d.scheduled_date === dateStr(year, month, day) &&
+      d.status === 'entregue'
+    ) : []
+
   const selectedDateStr = selectedDay ? dateStr(year, month, selectedDay) : null
 
   const filtered = demands.filter(d => {
@@ -349,40 +361,60 @@ export default function Agenda() {
         <div className="grid grid-cols-7 gap-0.5">
           {days.map((day, i) => {
             if (!day) return <div key={i} />
-            const dayDemands = demandsOnDay(day)
-            const ds         = dateStr(year, month, day)
-            const isToday    = ds === today
-            const isSel      = selectedDay === day
+            const ds           = dateStr(year, month, day)
+            const agendamentos = agendamentosOnDay(day)
+            const entregas     = entregasOnDay(day)
+            const hasEvents    = agendamentos.length > 0 || entregas.length > 0
+            const isToday      = ds === today
+            const isSel        = selectedDay === day
             return (
               <button key={i} onClick={() => setSelectedDay(isSel ? null : day)}
-                className={`flex flex-col items-center py-1.5 min-h-[2.5rem] transition-all duration-100
+                className={`relative flex flex-col items-center py-1.5 min-h-[3rem] transition-all duration-100
                   ${isSel    ? 'bg-lime/10 border border-lime/40 text-lime'
                   : isToday  ? 'border border-snow/20 text-snow'
-                  :            'hover:bg-snow/5 text-snow/60'}`}>
-                <span className="text-xs font-medium leading-none">{day}</span>
-                {dayDemands.length > 0 && (
-                  <div className="flex gap-0.5 mt-1 flex-wrap justify-center">
-                    {dayDemands.slice(0, 3).map((d, j) => (
-                      <span key={j} className={`w-1 h-1 rounded-full ${STATUS[d.status]?.dot ?? 'bg-snow/30'}`} />
-                    ))}
-                    {dayDemands.length > 3 && (
-                      <span className="text-[8px] text-snow/30 leading-none">+{dayDemands.length - 3}</span>
-                    )}
-                  </div>
-                )}
+                  : hasEvents ? 'hover:bg-snow/5 text-snow'
+                  :            'hover:bg-snow/5 text-snow/40'}`}>
+                <span className={`text-xs font-bold leading-none ${hasEvents ? 'text-snow' : ''}`}>{day}</span>
+
+                <div className="flex flex-col gap-0.5 mt-1 items-center">
+                  {/* Agendamentos — amarelo */}
+                  {agendamentos.length > 0 && (
+                    <div className="flex gap-0.5 items-center">
+                      {agendamentos.slice(0, 2).map((_, j) => (
+                        <span key={j} className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      ))}
+                      {agendamentos.length > 2 && (
+                        <span className="text-[8px] text-amber-400 leading-none font-bold">+{agendamentos.length - 2}</span>
+                      )}
+                    </div>
+                  )}
+                  {/* Entregas — verde */}
+                  {entregas.length > 0 && (
+                    <div className="flex gap-0.5 items-center">
+                      {entregas.slice(0, 2).map((_, j) => (
+                        <span key={j} className="w-1.5 h-1.5 rounded-full bg-lime" />
+                      ))}
+                      {entregas.length > 2 && (
+                        <span className="text-[8px] text-lime leading-none font-bold">+{entregas.length - 2}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
               </button>
             )
           })}
         </div>
 
         {/* dot legend */}
-        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border justify-center flex-wrap">
-          {Object.entries(STATUS).map(([k, v]) => (
-            <div key={k} className="flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${v.dot}`} />
-              <span className="text-[9px] uppercase tracking-wider text-snow/30">{v.label}</span>
-            </div>
-          ))}
+        <div className="flex items-center gap-5 mt-3 pt-3 border-t border-border justify-center flex-wrap">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+            <span className="text-[9px] uppercase tracking-wider text-snow/40">Agendamento</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-lime" />
+            <span className="text-[9px] uppercase tracking-wider text-snow/40">Entrega</span>
+          </div>
         </div>
       </div>
 
